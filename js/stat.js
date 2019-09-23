@@ -1,95 +1,89 @@
 'use strict';
 
-window.renderStatistics = function (canvas, names, times) {
-  var ctx = canvas;
-  cloudDraw(canvas, cloudParams);
-  textDraw(canvas, textParams);
+var cloudParams = {
+  WIDTH: 420,
+  HEIGHT: 270,
+  X: 100,
+  Y: 10,
+  GAP: 10,
+  MAIN_COLOR: '#fff',
+  SHADOW_COLOR: 'rgba(0, 0, 0, 0.7)'
+};
+
+var textParams = {
+  COLOR: '#000',
+  FONT: 'bold 16px PT Mono',
+  LEFT_POSITION: 120,
+  TOP_POSITION: 40,
+  BOTTOM_GAP: 20,
+  MESSAGE_1: 'Ура вы победили!',
+  MESSAGE_2: 'Список результатов:'
+};
+
+var barParams = {
+  WIDTH: 40,
+  MAX_HEIGHT: 150,
+  LEFT_POSITION: 150,
+  BOTTOM_POSITION: 240,
+  GAP_TOP: 10,
+  GAP_RIGHT: 90,
+  YOUR_COLOR: 'rgba(255, 0, 0, 1)'
+};
+
+// Отрисовка облака и тени
+var drawCloud = function (ctx, x, y, color) {
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, cloudParams.WIDTH, cloudParams.HEIGHT);
+};
+// Отрисовка облака и тени
+
+// Отрисовка текста
+var drawText = function (ctx, message, font, color) {
+  ctx.fillStyle = color;
+  ctx.font = font;
+  ctx.fillText(message, textParams.LEFT_POSITION, textParams.TOP_POSITION);
+  textParams.TOP_POSITION += textParams.BOTTOM_GAP;
+};
+// Отрисовка текста
+
+// Максимальный результат
+var maxValue = function (value) {
+  return Math.max.apply(null, value);
+};
+// Максимальный результат
+
+window.renderStatistics = function (ctx, names, times) {
+  drawCloud(ctx, cloudParams.X + cloudParams.GAP, cloudParams.Y + cloudParams.GAP, cloudParams.SHADOW_COLOR);
+  drawCloud(ctx, cloudParams.X, cloudParams.Y, cloudParams.MAIN_COLOR);
+
+  drawText(ctx, textParams.MESSAGE_1, textParams.FONT, textParams.COLOR);
+  drawText(ctx, textParams.MESSAGE_2, textParams.FONT, textParams.COLOR);
 
   // Максимальный результат
   var barMaxTime = maxValue(times);
   // Максимальный результат
 
   // Отрисовка гистограммы
-  var barMargin = barParams.LEFTPOSITION;
-  names.forEach(function (item, i) {
+  var barMargin = barParams.LEFT_POSITION;
+  names.forEach(function (name, i) {
     var barPercent = Math.round(times[i] * 100 / barMaxTime);
-    var barHeight = Math.round((barParams.MAXHEIGHT - barParams.GAP) * barPercent / 100);
-    var barTimePosition = barParams.BOTTOMPOSITION - barHeight - 10;
-    // var colorSaturation = Math.random().toFixed(1) * 100;
-    var barColor = item === 'Вы'
-      ? barParams.YOURCOLOR
-      : barParams.COMPETITORCOLOR;
+    var barHeight = Math.round((barParams.MAX_HEIGHT - barParams.GAP_TOP) * barPercent / 100);
+    var barTimePosition = barParams.BOTTOM_POSITION - barHeight - 10;
+    var barColor = name === 'Вы'
+      ? barParams.YOUR_COLOR
+      : 'hsl(240, 100%, ' + Math.random().toFixed(1) * 100 + '%)';
 
     ctx.fillStyle = textParams.COLOR;
     ctx.font = textParams.FONT;
-    ctx.fillText(item, barMargin, 260);
+    ctx.fillText(name, barMargin, 260);
 
     ctx.fillStyle = barColor;
-    ctx.fillRect(barMargin, barParams.BOTTOMPOSITION, barParams.WIDTH, -barHeight);
+    ctx.fillRect(barMargin, barParams.BOTTOM_POSITION, barParams.WIDTH, -barHeight);
 
     ctx.fillStyle = textParams.COLOR;
     ctx.font = textParams.FONT;
     ctx.fillText(Math.round(times[i]), barMargin, barTimePosition);
-    barMargin += 90;
+    barMargin += barParams.GAP_RIGHT;
   });
   // Отрисовка гистограммы
-};
-
-// Отрисовка облака и тени
-var cloudDraw = function (canvas, params) {
-  var ctx = canvas;
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-  ctx.fillRect(params.X + params.GAP, params.Y + params.GAP, params.WIDTH, params.HEIGHT);
-
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(params.X, params.Y, params.WIDTH, params.HEIGHT);
-};
-// Отрисовка облака и тени
-
-// Отрисовка текста
-var textDraw = function (canvas, params) {
-  var ctx = canvas;
-  ctx.fillStyle = params.COLOR;
-  ctx.font = params.FONT;
-  ctx.fillText('Ура вы победили!', params.LEFTPOSITION, params.TOPPOSITIONFIRST);
-
-  ctx.fillStyle = params.COLOR;
-  ctx.font = params.FONT;
-  ctx.fillText('Список результатов:', params.LEFTPOSITION, params.TOPPOSITIONSECOND);
-};
-// Отрисовка текста
-
-// Максимальный результат
-var maxValue = function (value) {
-  return value.reduce(function (a, b) {
-    return Math.max(a, b);
-  });
-};
-// Максимальный результат
-
-var cloudParams = {
-  WIDTH: 420,
-  HEIGHT: 270,
-  X: 100,
-  Y: 10,
-  GAP: 10
-};
-
-var textParams = {
-  COLOR: '#000',
-  FONT: 'bold 16px PT Mono',
-  LEFTPOSITION: 120,
-  TOPPOSITIONFIRST: 40,
-  TOPPOSITIONSECOND: 60
-};
-
-var barParams = {
-  WIDTH: 40,
-  MAXHEIGHT: 150,
-  LEFTPOSITION: 150,
-  BOTTOMPOSITION: 240,
-  GAP: 10,
-  YOURCOLOR: 'rgba(255, 0, 0, 1)',
-  COLORSATURATION: Math.random().toFixed(1) * 100,
-  COMPETITORCOLOR: 'hsl(240, 100%, ' + barParams.COLORSATURATION + '%)'
 };
