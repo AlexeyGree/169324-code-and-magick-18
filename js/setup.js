@@ -13,13 +13,15 @@ var FIREBALL_COLORS = ['#ee4830', '#30a8ee', '#5ce6c0', '#e848d5', '#e6e848'];
 var setupOpen = document.querySelector('.setup-open');
 var setupClose = setup.querySelector('.setup-close');
 var setupUserName = setup.querySelector('.setup-user-name');
-var setupFocusOn = false;
 var ESC_KEY = 27;
 var ENTER_KEY = 13;
 var wizardSetup = setup.querySelector('.setup-wizard');
 var wizardSetupCoat = wizardSetup.querySelector('.wizard-coat');
 var wizardSetupEyes = wizardSetup.querySelector('.wizard-eyes');
 var fireballSetup = setup.querySelector('.setup-fireball-wrap');
+var wizardSetupCoatColor = setup.querySelector('input[name=coat-color]');
+var wizardSetupEyesColor = setup.querySelector('input[name=eyes-color]');
+var fireballSetupColor = fireballSetup.querySelector('input[name=fireball-color]');
 
 var getRandomElement = function (arr) {
   return arr[Math.round(Math.random() * (arr.length - 1))];
@@ -66,19 +68,9 @@ addWizards(wizards);
 document.querySelector('.setup-similar').classList.remove('hidden');
 
 // Окно не закрывается при фокусе на элементе "Имя"
-setupUserName.addEventListener('focus', function () {
-  setupFocusOn = true;
-});
-
-setupUserName.addEventListener('blur', function () {
-  setupFocusOn = false;
-});
-
 var pressEscOnPopup = function (evt) {
-  if (evt.keyCode === ESC_KEY) {
-    if (!setupFocusOn) {
-      closePopup();
-    }
+  if (evt.keyCode === ESC_KEY && evt.target !== setupUserName) {
+    closePopup();
   }
 };
 // Окно не закрывается при фокусе на элементе "Имя"
@@ -121,18 +113,18 @@ setupClose.addEventListener('keydown', function (evt) {
 wizardSetupCoat.addEventListener('click', function () {
   var randomColor = getRandomElement(wizardParams.ROBE_COLORS);
   wizardSetupCoat.style.fill = randomColor;
-  setup.querySelector('input[name=coat-color]').value = randomColor;
+  wizardSetupCoatColor.value = randomColor;
 });
 
 wizardSetupEyes.addEventListener('click', function () {
   var randomColor = getRandomElement(wizardParams.EYES_COLORS);
   wizardSetupEyes.style.fill = randomColor;
-  setup.querySelector('input[name=eyes-color]').value = randomColor;
+  wizardSetupEyesColor.value = randomColor;
 });
 
 fireballSetup.addEventListener('click', function () {
   var randomColor = getRandomElement(FIREBALL_COLORS);
   fireballSetup.style.backgroundColor = randomColor;
-  fireballSetup.querySelector('input[name=fireball-color]').value = randomColor;
+  fireballSetupColor.value = randomColor;
 });
 // Установка цветов
